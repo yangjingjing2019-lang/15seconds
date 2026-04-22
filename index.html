@@ -12,7 +12,6 @@
             --score-font: 'Bungee', cursive;
             --main-font: 'Noto Sans TC', sans-serif;
         }
-
         body { 
             font-family: var(--main-font);
             background: linear-gradient(180deg, #f0f9ff 0%, #fff1f2 100%);
@@ -20,11 +19,9 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: hidden; /* 防止滾動影響沉浸感 */
-            touch-action: manipulation; /* 優化觸控延遲 */
+            overflow: hidden;
+            touch-action: manipulation;
         }
-
-        /* 標題特效 */
         .fancy-title {
             font-family: var(--title-font);
             background: linear-gradient(to bottom, #60a5fa, #f472b6);
@@ -32,8 +29,6 @@
             -webkit-text-fill-color: transparent;
             filter: drop-shadow(2px 2px 0px white);
         }
-
-        /* 響應式容器 */
         .glass-card {
             background: rgba(255, 255, 255, 0.8);
             backdrop-filter: blur(10px);
@@ -41,17 +36,12 @@
             box-shadow: 0 15px 30px rgba(0, 0, 0, 0.05);
             border-radius: 2.5rem;
         }
-
-        /* 手機端計分板滾動條隱藏 */
         .no-scrollbar::-webkit-scrollbar { display: none; }
-
         .player-active {
             background: linear-gradient(135deg, #3b82f6, #60a5fa) !important;
             color: white !important;
             transform: scale(1.02);
         }
-
-        /* 立體按鈕 */
         .btn-fancy {
             font-family: var(--title-font);
             background: linear-gradient(135deg, #fb7185, #f472b6);
@@ -59,117 +49,117 @@
             transition: all 0.1s;
         }
         .btn-fancy:active { transform: translateY(2px); border-bottom-width: 0px; }
-
-        /* 動畫雲朵 */
-        .cloud { position: absolute; background: white; border-radius: 50px; opacity: 0.4; filter: blur(5px); z-index: -1; animation: float-h 40s linear infinite; }
-        @keyframes float-h { from { transform: translateX(-50vw); } to { transform: translateX(150vw); } }
-
         .score-num { font-family: var(--score-font); }
     </style>
 </head>
-<body class="p-3 md:p-6">
+<body class="p-3">
 
-    <div class="cloud w-32 h-10 top-10"></div>
-    <div class="cloud w-48 h-16 bottom-20 right-0"></div>
-
-    <div id="setup-screen" class="w-full max-w-md glass-card p-6 md:p-10 text-center z-10 animate-in fade-in zoom-in duration-300">
-        <h1 class="text-5xl md:text-6xl fancy-title mb-8">15秒定律</h1>
-        
+    <div id="setup-screen" class="w-full max-w-md glass-card p-6 text-center z-10">
+        <h1 class="text-5xl fancy-title mb-8">15秒定律</h1>
         <div id="step-1">
             <p class="text-pink-400 font-black mb-6">🌈 選擇人數 🌈</p>
             <div class="grid grid-cols-3 gap-3">
-                <script>
-                    for(let i=1; i<=6; i++) {
-                        document.write(`<button onclick="setCount(${i})" class="aspect-square bg-white rounded-2xl border-2 border-pink-50 font-bold text-pink-500 text-xl hover:bg-pink-50">${i}人</button>`);
-                    }
-                </script>
+                <button onclick="unlockAndSet(1)" class="aspect-square bg-white rounded-2xl border-2 border-pink-50 font-bold text-pink-500 text-xl">1人</button>
+                <button onclick="unlockAndSet(2)" class="aspect-square bg-white rounded-2xl border-2 border-pink-50 font-bold text-pink-500 text-xl">2人</button>
+                <button onclick="unlockAndSet(3)" class="aspect-square bg-white rounded-2xl border-2 border-pink-50 font-bold text-pink-500 text-xl">3人</button>
+                <button onclick="unlockAndSet(4)" class="aspect-square bg-white rounded-2xl border-2 border-pink-50 font-bold text-pink-500 text-xl">4人</button>
+                <button onclick="unlockAndSet(5)" class="aspect-square bg-white rounded-2xl border-2 border-pink-50 font-bold text-pink-500 text-xl">5人</button>
+                <button onclick="unlockAndSet(6)" class="aspect-square bg-white rounded-2xl border-2 border-pink-50 font-bold text-pink-500 text-xl">6人</button>
             </div>
         </div>
-
         <div id="step-2" class="hidden">
-            <p class="text-sky-400 font-black mb-6 italic">輸入名字 ✨</p>
             <div id="name-inputs" class="space-y-3 mb-6 max-h-[40vh] overflow-y-auto px-2 no-scrollbar"></div>
-            <button onclick="beginGame()" class="btn-fancy text-white w-full py-4 rounded-2xl text-xl">開始挑戰</button>
+            <button onclick="beginGame()" class="btn-fancy text-white w-full py-4 rounded-2xl text-xl">確認名字並開始</button>
         </div>
     </div>
 
     <div id="game-screen" class="hidden w-full max-w-lg md:max-w-6xl h-[92vh] flex flex-col md:grid md:grid-cols-12 gap-4 z-10">
-        
-        <div class="col-span-12 md:col-span-3 order-2 md:order-1 h-32 md:h-auto">
-            <div class="glass-card p-4 h-full flex flex-col">
-                <h3 class="font-game text-lg text-sky-500 mb-2 md:mb-4 hidden md:block">選手名單</h3>
-                <div id="scoreboard" class="flex md:flex-col gap-2 overflow-x-auto md:overflow-y-auto no-scrollbar pb-2">
-                    </div>
-            </div>
+        <div class="col-span-12 md:col-span-3 order-2 md:order-1 h-24 md:h-auto">
+            <div id="scoreboard" class="flex md:flex-col gap-2 overflow-x-auto no-scrollbar glass-card p-3 h-full"></div>
         </div>
 
         <div class="col-span-12 md:col-span-6 order-1 md:order-2 flex flex-col gap-4 flex-grow">
-            <div class="glass-card flex-grow relative flex flex-col items-center justify-center p-6 md:p-12 text-center min-h-[250px]">
-                <div id="topic-container" class="w-full">
-                    <div id="topic-line-1" class="text-xl md:text-2xl text-pink-400 font-game mb-2 md:mb-4"></div>
-                    <div id="topic-line-2" class="text-3xl md:text-5xl font-black text-slate-700 leading-tight">請抽取題目</div>
-                </div>
+            <div class="glass-card flex-grow relative flex flex-col items-center justify-center p-6 text-center min-h-[250px]">
+                <div id="topic-line-1" class="text-xl text-pink-400 font-game mb-2"></div>
+                <div id="topic-line-2" class="text-3xl md:text-5xl font-black text-slate-700 leading-tight">準備好了嗎？</div>
                 <div class="absolute bottom-0 left-0 w-full h-3 bg-slate-100 rounded-b-[2.5rem] overflow-hidden">
                     <div id="progress-bar" class="h-full bg-gradient-to-r from-sky-400 to-pink-400" style="width: 0%"></div>
                 </div>
             </div>
-
-            <div class="h-20 flex justify-center items-center">
-                <button id="btn-draw" onclick="drawTopic()" class="btn-fancy text-white w-full h-full rounded-3xl text-2xl shadow-lg">抽取題目卡</button>
+            <div class="h-20 flex gap-3">
+                <button id="btn-draw" onclick="drawTopic()" class="btn-fancy text-white w-full h-full rounded-3xl text-2xl shadow-lg">抽取題目</button>
                 <div id="action-btns" class="hidden w-full h-full flex gap-3">
-                    <button onclick="finishTurn(false)" class="flex-1 bg-white rounded-3xl font-black text-slate-400 border-2 border-slate-100">棄權</button>
-                    <button onclick="finishTurn(true)" class="flex-[2] bg-gradient-to-r from-emerald-400 to-teal-500 text-white rounded-3xl font-black text-xl">挑戰成功 ⭐</button>
+                    <button onclick="finishTurn(false)" class="flex-1 bg-white rounded-3xl font-black text-slate-400">跳過</button>
+                    <button onclick="finishTurn(true)" class="flex-[2] bg-gradient-to-r from-emerald-400 to-teal-500 text-white rounded-3xl font-black text-xl">成功 ⭐</button>
                 </div>
             </div>
         </div>
 
-        <div class="col-span-12 md:col-span-3 order-3 flex md:flex-col gap-4">
-            <div class="glass-card flex-1 p-4 flex flex-row md:flex-col items-center justify-around md:justify-center">
-                <div class="relative w-24 h-24 md:w-44 md:h-44">
+        <div class="col-span-12 md:col-span-3 order-3 flex md:flex-col gap-3">
+            <div class="glass-card flex-1 flex flex-row md:flex-col items-center justify-around">
+                <div class="relative w-20 h-20 md:w-44 md:h-44">
                     <svg class="w-full h-full -rotate-90" viewBox="0 0 100 100">
                         <circle class="text-slate-100 stroke-current" stroke-width="8" fill="transparent" r="42" cx="50" cy="50"/>
                         <circle id="timer-circle" class="text-sky-400 stroke-current" stroke-width="8" stroke-linecap="round" fill="transparent" r="42" cx="50" cy="50" stroke-dasharray="264" stroke-dashoffset="0"/>
                     </svg>
-                    <div class="absolute inset-0 flex items-center justify-center">
-                        <span id="timer-text" class="text-3xl md:text-6xl font-black text-slate-700 score-num">15</span>
-                    </div>
+                    <div class="absolute inset-0 flex items-center justify-center font-black text-3xl md:text-6xl score-num" id="timer-text">15</div>
                 </div>
-                <div id="alarm-box" class="hidden text-rose-500 font-black text-sm animate-bounce md:mt-4">TIME UP!</div>
+                <div id="alarm-box" class="hidden text-rose-500 font-black animate-bounce">時間到！🔔</div>
             </div>
-            <button onclick="endGame()" class="bg-rose-500 text-white px-6 py-4 rounded-3xl font-black text-lg md:w-full">🚩 結算</button>
+            <button onclick="endGame()" class="bg-rose-500 text-white px-4 py-4 rounded-3xl font-black">結算</button>
         </div>
     </div>
 
     <div id="result-screen" class="hidden fixed inset-0 z-50 bg-sky-400/95 backdrop-blur-xl flex items-center justify-center p-4">
-        <div class="glass-card w-full max-w-sm p-8 text-center animate-in zoom-in">
+        <div class="glass-card w-full max-w-sm p-8 text-center">
             <h2 class="text-4xl fancy-title mb-6">榮譽榜</h2>
             <div id="final-list" class="space-y-3 mb-8"></div>
-            <button onclick="location.reload()" class="bg-white text-sky-500 w-full py-4 rounded-2xl font-black text-xl shadow-lg">返回主頁</button>
+            <button onclick="location.reload()" class="bg-white text-sky-500 w-full py-4 rounded-2xl font-black">返回主頁</button>
         </div>
     </div>
 
     <script>
-        // 題目與邏輯同前
         const topics = [
             "請說出三件 你一天裡做的主要事情。", "請說出三個 你欣賞一位老師的原因。", "請說出三件 你收到過的有意義的禮物。", "請說出三件 你假期裡喜歡做的事情。", "請說出三個 你喜歡一種植物的原因。", "請說出三個 你的理想或目標。", "請說出三件 過去一年裡讓你難忘的事情。", "請說出三個 好朋友身上具備的重要品質。", "請說出三件 你童年裡快樂的回憶。", "請說出三個 你的興趣愛好。", "請說出三個 你熟悉的地方最值得去的原因。", "請說出三個 你喜歡這個季節的原因。", "請說出三個 一本書讓你印象深刻的原因。", "請說出三件 一次旅行中發生的有趣事情。", "請說出三個 你喜歡的美食。", "請說出三個 你所在學校/集體的優點。", "請說出三個 你尊敬一個人的原因。", "請說出三個 你喜歡一種動物的特點。", "請說出三個 一種地域文化裡的特色。", "請說出三種 能帶給你的快樂的運動。", "請說出三件 能讓你感到開心的小事。", "請說出三個 你喜歡這個節日的原因。", "請說出三個 你欣賞一位歷史人物的品質。", "請說出三種 勞動帶給你的收穫。", "請說出三個 你喜歡這個職業的原因。", "請說出三個 你想去一個地方的原因。", "請說出三件 生活中讓你感動的事情。", "請說出三個 你喜歡的藝術形式。", "請說出三個 你印象最深的生肖。", "請說出三個 學習普通話帶給你的幫助。", "請說出三種 家庭對你成長帶來的影響。", "請說出三個 誠信在生活中的重要作用。", "請說出三個 你挑選衣服時看重的方面。", "請說出三個 自律能帶給你的好處。", "請說出三個 終身學習的意義。", "請說出三件 你保持健康要做到的事情。", "請說出三件 你可以為環保做的小事。", "請說出三個 不遵守社會公德的行為。", "請說出三個 具備團隊精神的表現。", "請說出三種 你知道的中國傳統文化。", "請說出三個 科技改變生活的表現。", "請說出三個 有修養的人具備的品質。", "請說出三件 你認為屬於幸福的小事。", "請說出三個 你保持良好心態的方法。", "請說出三個 垃圾分類帶來的好處。", "請說出三個 網絡給生活帶來的便利。", "請說出三種 你認為美的表現。", "請說出三種 中華傳統美德。", "請說出三種 夢幻友誼的特點。", "請說出三個 小家、大家與國家之間的關係。"
         ];
 
+        let audioCtx = null;
         let players = [];
         let curIdx = 0;
         let time = 15;
         let timer = null;
         let pool = [...topics];
 
-        function setCount(n) {
+        // 關鍵修復：初始化 AudioContext
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            // 播放一個靜音緩衝區來解鎖 iOS 限制
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            gainNode.gain.value = 0; 
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            oscillator.start(0);
+            oscillator.stop(0.01);
+        }
+
+        function unlockAndSet(n) {
+            initAudio(); // 用戶點擊人數時，立刻激活音頻
             document.getElementById('step-1').classList.add('hidden');
             const box = document.getElementById('name-inputs');
             box.innerHTML = Array.from({length:n}, (_,i) => 
-                `<input type="text" id="name-${i}" placeholder="挑戰者 ${i+1}" class="w-full p-4 border-2 border-sky-50 rounded-2xl outline-none focus:border-sky-300 font-bold text-center text-sky-600">`
+                `<input type="text" id="name-${i}" placeholder="挑戰者 ${i+1}" class="w-full p-4 border-2 border-sky-50 rounded-2xl outline-none font-bold text-center text-sky-600">`
             ).join('');
             document.getElementById('step-2').classList.remove('hidden');
         }
 
         function beginGame() {
+            initAudio(); // 再次確保激活
             players = Array.from(document.querySelectorAll('#name-inputs input')).map((inp,i) => ({
                 name: inp.value.trim() || `挑戰者 ${i+1}`,
                 score: 0
@@ -182,19 +172,15 @@
         function updateScores() {
             const list = document.getElementById('scoreboard');
             list.innerHTML = players.map((p,i) => `
-                <div class="min-w-[100px] md:min-w-0 p-3 md:p-4 rounded-2xl flex flex-col md:flex-row justify-between items-center shrink-0 transition-all ${i===curIdx ? 'player-active' : 'bg-white/60 text-slate-400'}">
-                    <span class="font-black text-sm md:text-lg truncate w-full text-center md:text-left">${p.name}</span>
-                    <span class="score-num text-lg md:text-xl">${p.score}★</span>
+                <div class="min-w-[100px] p-2 md:p-4 rounded-2xl flex flex-col md:flex-row justify-between items-center transition-all ${i===curIdx ? 'player-active' : 'bg-white/60 text-slate-400'}">
+                    <span class="font-black text-xs md:text-lg truncate w-full text-center">${p.name}</span>
+                    <span class="score-num text-sm md:text-xl">${p.score}★</span>
                 </div>
             `).join('');
-            // 手機端自動滾動到當前玩家
-            if (window.innerWidth < 768) {
-                const activeCard = list.children[curIdx];
-                list.scrollTo({ left: activeCard.offsetLeft - 20, behavior: 'smooth' });
-            }
         }
 
         function drawTopic() {
+            initAudio(); // 每次點擊抽題時都刷新音頻權限
             if(pool.length === 0) pool = [...topics];
             const raw = pool.splice(Math.floor(Math.random()*pool.length), 1)[0];
             const [line1, line2] = raw.split(" ");
@@ -237,19 +223,29 @@
             updateScores();
         }
 
+        // 修改後的鈴聲函數
         function playRing() {
-            const ctx = new (window.AudioContext || window.webkitAudioContext)();
-            const play = (f, s, d) => {
-                const o = ctx.createOscillator();
-                const g = ctx.createGain();
-                o.frequency.setValueAtTime(f, s);
-                g.gain.setValueAtTime(0.1, s);
-                g.gain.exponentialRampToValueAtTime(0.001, s + d);
-                o.connect(g); g.connect(ctx.destination);
-                o.start(s); o.stop(s + d);
+            if (!audioCtx) initAudio();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+
+            const playNote = (freq, start, dur) => {
+                const osc = audioCtx.createOscillator();
+                const g = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, start);
+                g.gain.setValueAtTime(0.2, start);
+                g.gain.exponentialRampToValueAtTime(0.001, start + dur);
+                osc.connect(g);
+                g.connect(audioCtx.destination);
+                osc.start(start);
+                osc.stop(start + dur);
             };
-            play(880, ctx.currentTime, 0.4);
-            play(1109, ctx.currentTime + 0.1, 0.4);
+
+            // 手機版活潑鈴聲：叮-咚-叮！
+            const now = audioCtx.currentTime;
+            playNote(880, now, 0.4);       // A5
+            playNote(1109, now + 0.2, 0.4); // C#6
+            playNote(1318, now + 0.4, 0.5); // E6
         }
 
         function endGame() {
