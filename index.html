@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>15 秒定律 - 夢幻普通話挑戰</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Noto+Sans+TC:wght@500;900&family=Bungee&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --title-font: 'ZCOOL KuaiLe', cursive;
+            --score-font: 'Bungee', cursive;
+            --main-font: 'Noto Sans TC', sans-serif;
+        }
+
+        body { 
+            font-family: var(--main-font);
+            background: linear-gradient(180deg, #f0f9ff 0%, #fff1f2 100%);
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        /* 藝術標題：立體可愛風格 */
+        .fancy-title {
+            font-family: var(--title-font);
+            background: linear-gradient(to bottom, #60a5fa, #f472b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(4px 4px 0px rgba(255, 255, 255, 1)) drop-shadow(6px 6px 0px rgba(0,0,0,0.05));
+            letter-spacing: 2px;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(12px);
+            border: 6px solid white;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
+            border-radius: 4rem;
+        }
+
+        /* 結算分數字體 */
+        .score-num {
+            font-family: var(--score-font);
+            color: #fb7185;
+            text-shadow: 2px 2px 0px #fff;
+        }
+
+        /* 玩家活動狀態 */
+        .player-active {
+            background: linear-gradient(135deg, #3b82f6, #60a5fa) !important;
+            color: white !important;
+            transform: scale(1.08) rotate(-1deg);
+            box-shadow: 0 15px 25px rgba(59, 130, 246, 0.3);
+        }
+
+        /* 按鈕立體感 */
+        .btn-fancy {
+            font-family: var(--title-font);
+            background: linear-gradient(135deg, #fb7185, #f472b6);
+            border-bottom: 6px solid #e11d48;
+            transition: all 0.1s;
+        }
+        .btn-fancy:active { transform: translateY(4px); border-bottom-width: 2px; }
+
+        /* 雲朵背景 */
+        .cloud { position: absolute; background: white; border-radius: 50px; opacity: 0.6; filter: blur(5px); z-index: -1; animation: float-h 30s linear infinite; }
+        @keyframes float-h { from { transform: translateX(-20vw); } to { transform: translateX(120vw); } }
+
+        /* 閃爍星星 */
+        .star-box { position: absolute; font-size: 24px; animation: twinkle 2s infinite; pointer-events: none; }
+        @keyframes twinkle { 0%, 100% { opacity: 0.2; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1.1); } }
+    </style>
+</head>
+<body class="p-4 relative flex items-center justify-center">
+
+    <div class="cloud w-40 h-12 top-20"></div>
+    <div class="cloud w-60 h-20 top-60 opacity-40" style="animation-delay: -15s;"></div>
+    <div class="star-box top-10 left-[10%]">⭐</div>
+    <div class="star-box top-40 right-[15%]">✨</div>
+
+    <div id="setup-screen" class="max-w-lg w-full glass-card p-12 text-center z-10 animate-in zoom-in duration-500">
+        <h1 class="text-7xl fancy-title mb-2">15秒定律</h1>
+        <p class="text-slate-400 font-bold tracking-[0.3em] text-sm mb-12 italic">MANDARIN CHALLENGE</p>
+        
+        <div id="step-1">
+            <p class="text-pink-400 font-black mb-6 flex items-center justify-center gap-2">
+                <span>🌈</span> 選擇挑戰人數 <span>🌈</span>
+            </p>
+            <div class="grid grid-cols-3 gap-4">
+                <button onclick="setCount(1)" class="p-5 bg-white rounded-3xl border-2 border-pink-50 font-bold hover:border-pink-300 hover:bg-pink-50 transition-all text-pink-500 text-2xl">1人</button>
+                <button onclick="setCount(2)" class="p-5 bg-white rounded-3xl border-2 border-pink-50 font-bold hover:border-pink-300 hover:bg-pink-50 transition-all text-pink-500 text-2xl">2人</button>
+                <button onclick="setCount(3)" class="p-5 bg-white rounded-3xl border-2 border-pink-50 font-bold hover:border-pink-300 hover:bg-pink-50 transition-all text-pink-500 text-2xl">3人</button>
+                <button onclick="setCount(4)" class="p-5 bg-white rounded-3xl border-2 border-pink-50 font-bold hover:border-pink-300 hover:bg-pink-50 transition-all text-pink-500 text-2xl">4人</button>
+                <button onclick="setCount(5)" class="p-5 bg-white rounded-3xl border-2 border-pink-50 font-bold hover:border-pink-300 hover:bg-pink-50 transition-all text-pink-500 text-2xl">5人</button>
+                <button onclick="setCount(6)" class="p-5 bg-white rounded-3xl border-2 border-pink-50 font-bold hover:border-pink-300 hover:bg-pink-50 transition-all text-pink-500 text-2xl">6人</button>
+            </div>
+        </div>
+
+        <div id="step-2" class="hidden">
+            <p class="text-sky-400 font-black mb-6 italic">輸入玩家的名字 ✨</p>
+            <div id="name-inputs" class="space-y-4 mb-8 max-h-[300px] overflow-y-auto px-4 custom-scrollbar"></div>
+            <button onclick="beginGame()" class="btn-fancy text-white w-full py-5 rounded-[2rem] text-2xl tracking-widest shadow-xl">開始挑戰</button>
+        </div>
+    </div>
+
+    <div id="game-screen" class="hidden w-full max-w-6xl z-10">
+        <div class="grid grid-cols-12 gap-8">
+            <div class="col-span-12 lg:col-span-3 flex flex-col gap-6">
+                <div class="glass-card p-8 flex-grow">
+                    <h3 class="font-game text-2xl text-sky-500 mb-6 border-b-2 border-sky-50 pb-2">選手名單</h3>
+                    <div id="scoreboard" class="space-y-4"></div>
+                </div>
+                <button onclick="endGame()" class="py-4 bg-white/60 hover:bg-rose-500 hover:text-white rounded-3xl font-black text-rose-500 transition-all border-2 border-white">🚩 結束挑戰</button>
+            </div>
+
+            <div class="col-span-12 lg:col-span-6">
+                <div class="glass-card h-[480px] relative flex flex-col items-center justify-center p-12 text-center">
+                    <div id="topic-container" class="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                        <div id="topic-line-1" class="text-3xl text-pink-400 font-game mb-6 tracking-wider"></div>
+                        <div id="topic-line-2" class="text-5xl md:text-6xl font-black text-slate-700 leading-tight">準備好了嗎？</div>
+                    </div>
+                    <div class="absolute bottom-0 left-0 w-full h-4 bg-slate-100 rounded-b-[4rem] overflow-hidden">
+                        <div id="progress-bar" class="h-full bg-gradient-to-r from-sky-400 via-pink-400 to-yellow-400 transition-all" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="flex justify-center gap-6 mt-10">
+                    <button id="btn-draw" onclick="drawTopic()" class="btn-fancy text-white px-20 py-6 rounded-full text-3xl shadow-2xl">抽取題目</button>
+                    <div id="action-btns" class="hidden flex gap-4">
+                        <button onclick="finishTurn(false)" class="bg-white px-10 py-5 rounded-full font-black text-slate-400 border-4 border-slate-50 hover:bg-slate-100 transition-all">棄權</button>
+                        <button onclick="finishTurn(true)" class="bg-gradient-to-r from-emerald-400 to-teal-500 text-white px-12 py-5 rounded-full font-black text-2xl shadow-xl shadow-emerald-200">回答成功 ⭐</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-span-12 lg:col-span-3">
+                <div class="glass-card p-10 flex flex-col items-center justify-center h-full">
+                    <div class="relative w-52 h-52">
+                        <svg class="w-full h-full -rotate-90" viewBox="0 0 100 100">
+                            <circle class="text-slate-100 stroke-current" stroke-width="10" fill="transparent" r="40" cx="50" cy="50"/>
+                            <circle id="timer-circle" class="text-sky-400 stroke-current transition-all duration-100" stroke-width="10" stroke-linecap="round" fill="transparent" r="40" cx="50" cy="50" stroke-dasharray="251" stroke-dashoffset="0"/>
+                        </svg>
+                        <div class="absolute inset-0 flex flex-col items-center justify-center">
+                            <span id="timer-text" class="text-7xl font-black text-slate-700 score-num leading-none">15</span>
+                            <span class="text-sm font-black text-slate-300 mt-2 tracking-widest uppercase">Sec</span>
+                        </div>
+                    </div>
+                    <div id="alarm-box" class="mt-8 hidden animate-bounce bg-rose-500 text-white px-8 py-3 rounded-full font-black shadow-xl">
+                        TIME UP! 🔔
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="result-screen" class="hidden fixed inset-0 z-50 bg-sky-400/95 backdrop-blur-xl flex items-center justify-center p-6">
+        <div class="glass-card max-w-xl w-full p-12 text-center animate-in zoom-in duration-500 shadow-2xl border-white/50">
+            <h2 class="text-6xl fancy-title mb-10">排行榜</h2>
+            <div id="final-list" class="space-y-6 mb-12"></div>
+            <button onclick="location.reload()" class="bg-white text-sky-500 px-16 py-5 rounded-[2rem] font-black text-2xl shadow-xl hover:scale-105 transition-all">返回主頁面</button>
+        </div>
+    </div>
+
+    <script>
+        const topics = [
+            "請說出三件 你一天裡做的主要事情。", "請說出三個 你欣賞一位老師的原因。", "請說出三件 你收到過的有意義的禮物。", "請說出三件 你假期裡喜歡做的事情。", "請說出三個 你喜歡一種植物的原因。", "請說出三個 你的理想或目標。", "請說出三件 過去一年裡讓你難忘的事情。", "請說出三個 好朋友身上具備的重要品質。", "請說出三件 你童年裡快樂的回憶。", "請說出三個 你的興趣愛好。", "請說出三個 你熟悉的地方最值得去的原因。", "請說出三個 你喜歡這個季節的原因。", "請說出三個 一本書讓你印象深刻的原因。", "請說出三件 一次旅行中發生的有趣事情。", "請說出三個 你喜歡的美食。", "請說出三個 你所在學校/集體的優點。", "請說出三個 你尊敬一個人的原因。", "請說出三個 你喜歡一種動物的特點。", "請說出三個 一種地域文化裡的特色。", "請說出三種 能帶給你的快樂的運動。", "請說出三件 能讓你感到開心的小事。", "請說出三個 你喜歡這個節日的原因。", "請說出三個 你欣賞一位歷史人物的品質。", "請說出三種 勞動帶給你的收穫。", "請說出三個 你喜歡這個職業的原因。", "請說出三個 你想去一個地方的原因。", "請說出三件 生活中讓你感動的事情。", "請說出三個 你喜歡的藝術形式。", "請說出三個 你印象最深的生肖。", "請說出三個 學習普通話帶給你的幫助。", "請說出三種 家庭對你成長帶來的影響。", "請說出三個 誠信在生活中的重要作用。", "請說出三個 你挑選衣服時看重的方面。", "請說出三個 自律能帶給你的好處。", "請說出三個 終身學習的意義。", "請說出三件 你保持健康要做到的事情。", "請說出三件 你可以為環保做的小事。", "請說出三個 不遵守社會公德的行為。", "請說出三個 具備團隊精神的表現。", "請說出三種 你知道的中國傳統文化。", "請說出三個 科技改變生活的表現。", "請說出三個 有修養的人具備的品質。", "請說出三件 你認為屬於幸福的小事。", "請說出三個 你保持良好心態的方法。", "請說出三個 垃圾分類帶來的好處。", "請說出三個 網絡給生活帶來的便利。", "請說出三種 你認為美的表現。", "請說出三種 中華傳統美德。", "請說出三種 珍貴友誼的特點。", "請說出三個 小家、大家與國家之間的關係。"
+        ];
+
+        let players = [];
+        let curIdx = 0;
+        let time = 15;
+        let timer = null;
+        let pool = [...topics];
+
+        function setCount(n) {
+            document.getElementById('step-1').classList.add('hidden');
+            const box = document.getElementById('name-inputs');
+            box.innerHTML = Array.from({length:n}, (_,i) => 
+                `<input type="text" id="name-${i}" placeholder="玩家 ${i+1}" class="w-full p-4 border-4 border-sky-50 rounded-[1.5rem] outline-none focus:border-sky-300 font-bold text-xl text-center text-sky-600">`
+            ).join('');
+            document.getElementById('step-2').classList.remove('hidden');
+        }
+
+        function beginGame() {
+            players = Array.from(document.querySelectorAll('#name-inputs input')).map((inp,i) => ({
+                name: inp.value.trim() || `玩家 ${i+1}`,
+                score: 0
+            }));
+            document.getElementById('setup-screen').classList.add('hidden');
+            document.getElementById('game-screen').classList.remove('hidden');
+            updateScores();
+        }
+
+        function updateScores() {
+            const list = document.getElementById('scoreboard');
+            list.innerHTML = players.map((p,i) => `
+                <div class="p-5 rounded-[2rem] flex justify-between items-center transition-all duration-300 ${i===curIdx ? 'player-active' : 'bg-white text-slate-400'}">
+                    <span class="font-black text-xl">${p.name}</span>
+                    <span class="score-num text-2xl">${p.score}</span>
+                </div>
+            `).join('');
+        }
+
+        function drawTopic() {
+            if(pool.length === 0) pool = [...topics];
+            const raw = pool.splice(Math.floor(Math.random()*pool.length), 1)[0];
+            const [line1, line2] = raw.split(" ");
+            
+            document.getElementById('topic-line-1').textContent = line1;
+            document.getElementById('topic-line-2').textContent = line2 || "";
+            document.getElementById('btn-draw').classList.add('hidden');
+            document.getElementById('action-btns').classList.remove('hidden');
+            document.getElementById('alarm-box').classList.add('hidden');
+            
+            startTime();
+        }
+
+        function startTime() {
+            clearInterval(timer);
+            time = 15;
+            timer = setInterval(() => {
+                time -= 0.1;
+                if(time <= 0) {
+                    time = 0; clearInterval(timer);
+                    document.getElementById('alarm-box').classList.remove('hidden');
+                    playRing();
+                }
+                updateUI();
+            }, 100);
+        }
+
+        function updateUI() {
+            document.getElementById('timer-text').textContent = Math.ceil(time);
+            document.getElementById('timer-circle').style.strokeDashoffset = 251 - (time/15)*251;
+            document.getElementById('progress-bar').style.width = `${(1 - time/15)*100}%`;
+        }
+
+        function finishTurn(win) {
+            clearInterval(timer);
+            if(win) players[curIdx].score++;
+            curIdx = (curIdx + 1) % players.length;
+            
+            document.getElementById('topic-line-1').textContent = "";
+            document.getElementById('topic-line-2').textContent = `${players[curIdx].name} 請抽題`;
+            document.getElementById('btn-draw').classList.remove('hidden');
+            document.getElementById('action-btns').classList.add('hidden');
+            updateScores();
+        }
+
+        function playRing() {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const playNote = (f, s, d) => {
+                const o = ctx.createOscillator();
+                const g = ctx.createGain();
+                o.frequency.setValueAtTime(f, s);
+                g.gain.setValueAtTime(0.1, s);
+                g.gain.exponentialRampToValueAtTime(0.001, s + d);
+                o.connect(g); g.connect(ctx.destination);
+                o.start(s); o.stop(s + d);
+            };
+            playNote(880, ctx.currentTime, 0.4);
+            playNote(1109, ctx.currentTime + 0.1, 0.4);
+        }
+
+        function endGame() {
+            if(!confirm("確定要現在揭曉最後的得分嗎？")) return;
+            const sorted = [...players].sort((a,b) => b.score - a.score);
+            const box = document.getElementById('final-list');
+            box.innerHTML = sorted.map((p,i) => `
+                <div class="flex justify-between items-center p-6 bg-white rounded-[2.5rem] shadow-sm border-b-8 ${i===0?'border-yellow-400':'border-sky-100'}">
+                    <span class="text-2xl font-black ${i===0?'text-yellow-600':'text-slate-600'}">
+                        ${i===0?'🥇 ':(i===1?'🥈 ':(i===2?'🥉 ':''))}${p.name}
+                    </span>
+                    <span class="score-num text-4xl text-sky-500">${p.score} <small class="text-sm font-game text-slate-300 uppercase">Points</small></span>
+                </div>
+            `).join('');
+            document.getElementById('result-screen').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
